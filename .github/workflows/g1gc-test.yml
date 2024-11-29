@@ -50,7 +50,7 @@ jobs:
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
         with:
-          k6-version: '0.51.0'  # Specify  the k6 version you want to use
+          k6-version: '0.51.0'  # Specify the k6 version you want to use
 
       - name: Run k6 tests
         uses: grafana/run-k6-action@v1
@@ -58,7 +58,7 @@ jobs:
           path: |
             ./tests/health-test.js
             ./tests/greet-test.js
-          flags: --out csv=${{ env.GCNAME }}-test-results.csv  # Save the results to a JSON file
+          flags: --out csv=${{ env.GCNAME }}-test-results.csv  # Save the results to a CSV file
 
       - name: Extract GC logs
         run: docker cp trivy-demo-${{ env.GCNAME }}:/app/gc.log ./gc.log
@@ -72,10 +72,21 @@ jobs:
           mv gc.log ${{ env.GCNAME }}-gc.log
           ls -ltra
 
-      - name: Upload k6 test results
+      - name: Upload GC log to GCEasy for analysis
+        run: |
+          curl -X POST https://gceasy.io/api/analyzeGC \
+            -H "Content-Type: multipart/form-data" \
+            -F "gcLog=@${{ env.GCNAME }}-gc.log" \
+            -F "apiKey=${{ secrets.GCEASY_API_KEY }}" \
+            -o gceasy-response-${{ env.GCNAME }}.json
+
+      - name: Display GC Analysis Results
+        run: cat gceasy-response-${{ env.GCNAME }}.json
+
+      - name: Upload k6 test results and GC analysis
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.GCNAME }}-k6-results
+          name: ${{ env.GCNAME }}-k6-results-and-analysis
           path: |
             cpuinfo.txt
             meminfo.txt
@@ -83,6 +94,7 @@ jobs:
             ${{ env.GCNAME }}-health-test-summary.json
             ${{ env.GCNAME }}-greet-test-summary.json
             ${{ env.GCNAME }}-gc.log
+            gceasy-response-${{ env.GCNAME }}.json
 
       - name: Stop container
         run: |
