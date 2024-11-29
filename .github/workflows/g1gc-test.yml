@@ -50,7 +50,7 @@ jobs:
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
         with:
-          k6-version: '0.51.0'  # Specify the k6 version you want to use
+          k6-version: '0.51.0'  # Specify  the k6 version you want to use
 
       - name: Run k6 tests
         uses: grafana/run-k6-action@v1
