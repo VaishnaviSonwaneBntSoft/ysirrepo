@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+    container_name: trivy-demo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/libs/trivydemo-0.0.1-SNAPSHOT.jar:/app/trivy-demo.jar
+    command: ["java", "-jar", "/app/trivy-demo.jar"]

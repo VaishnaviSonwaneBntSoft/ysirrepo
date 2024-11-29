@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/openjdk/jdk:21-ubuntu
+
+LABEL authors="yogeshwar.vhatkar"
+
+WORKDIR /app
+
+COPY build/libs/trivydemo-0.0.1-SNAPSHOT.jar trivy-demo-gzgc.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-Xms2G", "-Xmx2G", "-XX:MaxMetaspaceSize=1G", "-XX:+UseZGC", "-XX:+ZGenerational", "-XX:MaxGCPauseMillis=200", "-XX:+UseStringDeduplication", "-verbose:gc", "-Xlog:gc*:file=gc.log:time,uptime,level,tags", "-jar", "trivy-demo-gzgc.jar"]

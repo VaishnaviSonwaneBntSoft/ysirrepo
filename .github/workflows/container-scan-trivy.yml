@@ -1,0 +1,98 @@
+name: 40 - Aqua Trivy Scan Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  checks: write
+  packages: write
+
+jobs:
+  build-and-scan:
+    if: false # temp disabled
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build with Gradle Wrapper
+        run: |
+          pwd
+          chmod 755 ./gradlew
+          ./gradlew build
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "Log in to GitHub Container Registry"
+          pwd
+          echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Set lowercase repository owner
+        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        run: |
+          echo "Build Docker image with command :: docker build -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo:latest ."
+          docker build -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo:latest .
+          echo "push Docker image with command :: docker push ghcr.io/${{ env.REPO_OWNER }}/trivy-demo:latest"
+          docker push ghcr.io/${{ env.REPO_OWNER }}/trivy-demo:latest
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Check if Trivy is installed
+        run: |
+          which trivy || echo "Trivy is not installed"
+          trivy --version || echo "Trivy version not found"
+
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            trivy-${{ runner.os }}-
+
+      - name: Scan Docker image with Trivy and generate SARIF
+        run: |
+          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          for i in {1..3}; do
+            trivy image \
+              --light \
+              --format sarif \
+              --output trivy-results.sarif \
+              --severity LOW,MEDIUM,HIGH,CRITICAL \
+              ghcr.io/${{ env.REPO_OWNER }}/trivy-demo:latest && break || sleep 60
+          done
+
+      - name: Upload Trivy SARIF report as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-sarif-report
+          path: trivy-results.sarif
+          retention-days: 30
