@@ -63,6 +63,12 @@ jobs:
       - name: Extract GC logs
         run: docker cp trivy-demo-${{ env.GCNAME }}:/app/gc.log ./gc.log
 
+      - name: Send GC log to GCEasy
+        run: |
+          curl -X POST "https://gceasy.io/analyzeGC?apiKey=e471c900-0bef-4bdd-acf4-159268dfdd52" \
+          -H "Content-Type: text/plain" \
+          --data-binary @${{ env.GCNAME }}-gc.log > ${GITHUB_WORKSPACE}/${{ env.GCNAME }}-gc-analysis.json
+
       - name: Check and rename generated files
         run: |
           pwd
@@ -72,10 +78,10 @@ jobs:
           mv gc.log ${{ env.GCNAME }}-gc.log
           ls -ltra
 
-      - name: Upload k6 test results
+      - name: Upload test and analysis results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.GCNAME }}-k6-results
+          name: ${{ env.GCNAME }}-results
           path: |
             cpuinfo.txt
             meminfo.txt
@@ -83,6 +89,7 @@ jobs:
             ${{ env.GCNAME }}-health-test-summary.json
             ${{ env.GCNAME }}-greet-test-summary.json
             ${{ env.GCNAME }}-gc.log
+            ${{ env.GCNAME }}-gc-analysis.json
 
       - name: Stop container
         run: |
