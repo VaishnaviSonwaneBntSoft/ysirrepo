@@ -1,6 +1,6 @@
 name: 50 - Test Web Service G1 GC
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   test:
@@ -72,33 +72,33 @@ jobs:
           mv gc.log ${{ env.GCNAME }}-gc.log
           ls -ltra
 
-      - name: Upload GC log to GCEasy for analysis
+      - name: Debug GCEasy upload
         run: |
-          curl -X POST https://gceasy.io/api/analyzeGC \
-            -H "Content-Type: multipart/form-data" \
-            -F "gcLog=@${{ env.GCNAME }}-gc.log" \
-            -F "apiKey=${{ secrets.GCEASY_API_KEY }}" \
-            -o gceasy-response-${{ env.GCNAME }}.json
+          curl -X POST "https://gceasy.io/analyzeGC?apiKey=${{ secrets.GCEASY_API_KEY }}" \
+          -H "Content-Type: text/plain" \
+          --data-binary "@${{ env.GCNAME }}-gc.log" \
+          -o gceasy-response-${{ env.GCNAME }}.json || (cat gceasy-response-${{ env.GCNAME }}.json && exit 1)
 
-      - name: Display GC Analysis Results
-        run: cat gceasy-response-${{ env.GCNAME }}.json
 
-      - name: Upload k6 test results and GC analysis
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.GCNAME }}-k6-results-and-analysis
-          path: |
-            cpuinfo.txt
-            meminfo.txt
-            ${{ env.GCNAME }}-test-results.csv
-            ${{ env.GCNAME }}-health-test-summary.json
-            ${{ env.GCNAME }}-greet-test-summary.json
-            ${{ env.GCNAME }}-gc.log
-            gceasy-response-${{ env.GCNAME }}.json
+          - name: Display GC Analysis Results
+            run: cat gceasy-response-${{ env.GCNAME }}.json
 
-      - name: Stop container
-        run: |
-          docker ps
-          docker stop trivy-demo-${{ env.GCNAME }}
-          docker container prune -f
-          docker ps
+          - name: Upload k6 test results and GC analysis
+            uses: actions/upload-artifact@v4
+            with:
+              name: ${{ env.GCNAME }}-k6-results-and-analysis
+              path: |
+                cpuinfo.txt
+                meminfo.txt
+                ${{ env.GCNAME }}-test-results.csv
+                ${{ env.GCNAME }}-health-test-summary.json
+                ${{ env.GCNAME }}-greet-test-summary.json
+                ${{ env.GCNAME }}-gc.log
+                gceasy-response-${{ env.GCNAME }}.json
+
+          - name: Stop container
+            run: |
+              docker ps
+              docker stop trivy-demo-${{ env.GCNAME }}
+              docker container prune -f
+              docker ps
