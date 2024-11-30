@@ -58,7 +58,7 @@ jobs:
           path: |
             ./tests/health-test.js
             ./tests/greet-test.js
-          flags: --out csv=${{ env.GCNAME }}-test-results.csv  # Save the results to a JSON file
+          flags: --out csv=${{ env.GCNAME }}-test-results.csv  # Save the results to a CSV file
 
       - name: Extract GC logs
         run: docker cp trivy-demo-${{ env.GCNAME }}:/app/gc.log ./gc.log
@@ -74,7 +74,7 @@ jobs:
 
       - name: Send GC log to GCEasy
         run: |
-          curl -X POST "https://gceasy.io/analyzeGC?apiKey=e471c900-0bef-4bdd-acf4-159268dfdd52" \
+          curl -X POST "https://gceasy.io/analyzeGC?apiKey=${{ secrets.GCEASY_API_KEY }}" \
           -H "Content-Type: text/plain" \
           --data-binary @${{ env.GCNAME }}-gc.log > ${GITHUB_WORKSPACE}/${{ env.GCNAME }}-gc-analysis.json
 

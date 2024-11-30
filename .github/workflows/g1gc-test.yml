@@ -43,7 +43,7 @@ jobs:
 
       - name: Build and run container
         run: |
-          docker build --file Dockerfile-${{ env.GCNAME }} -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest .
+          docker build --file Dockerfile-${{ env.GCNAME }} -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest . 
           docker push ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest
           docker run --name trivy-demo-${{ env.GCNAME }} -d -p 8181:8080 ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest
 
@@ -79,8 +79,31 @@ jobs:
           --data-binary "@${{ env.GCNAME }}-gc.log" \
           -o gceasy-response-${{ env.GCNAME }}.json || (cat gceasy-response-${{ env.GCNAME }}.json && exit 1)
 
+      - name: Extract and save GC values to a text file
+        run: |
+          # Use jq to extract required values from the JSON response
+          GC_RESPONSE_FILE="gceasy-response-${{ env.GCNAME }}.json"
+
+          # Extract values
+          average_pause_time=$(jq '.gcKPI.averagePauseTime' $GC_RESPONSE_FILE)
+          max_pause_time=$(jq '.gcKPI.maxPauseTime' $GC_RESPONSE_FILE)
+          throughput_percentage=$(jq '.gcKPI.throughputPercentage' $GC_RESPONSE_FILE)
+          minor_gc_count=$(jq '.gcStatistics.minorGCCount' $GC_RESPONSE_FILE)
+          full_gc_count=$(jq '.gcStatistics.fullGCCount' $GC_RESPONSE_FILE)
+          avg_allocation_rate=$(jq '.gcStatistics.avgAllocationRate' $GC_RESPONSE_FILE)
+
+          # Save extracted values to a text file
+          echo "GC Log Analysis Report" > gc_analysis_report.txt
+          echo "------------------------" >> gc_analysis_report.txt
+          echo "Average Pause Time: $average_pause_time sec" >> gc_analysis_report.txt
+          echo "Max Pause Time: $max_pause_time sec" >> gc_analysis_report.txt
+          echo "Throughput Percentage: $throughput_percentage%" >> gc_analysis_report.txt
+          echo "Minor GC Count: $minor_gc_count" >> gc_analysis_report.txt
+          echo "Full GC Count: $full_gc_count" >> gc_analysis_report.txt
+          echo "Average Allocation Rate: $avg_allocation_rate MB/sec" >> gc_analysis_report.txt
+
       - name: Display GC Analysis Results
-        run: cat gceasy-response-${{ env.GCNAME }}.json
+        run: cat gc_analysis_report.txt
 
       - name: Upload k6 test results and GC analysis
         uses: actions/upload-artifact@v4
@@ -94,6 +117,7 @@ jobs:
             ${{ env.GCNAME }}-greet-test-summary.json
             ${{ env.GCNAME }}-gc.log
             gceasy-response-${{ env.GCNAME }}.json
+            gc_analysis_report.txt  # Upload the generated report
 
       - name: Stop container
         run: |
