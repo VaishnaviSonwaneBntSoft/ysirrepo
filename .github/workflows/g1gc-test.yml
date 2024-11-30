@@ -117,7 +117,7 @@ jobs:
             ${{ env.GCNAME }}-greet-test-summary.json
             ${{ env.GCNAME }}-gc.log
             gceasy-response-${{ env.GCNAME }}.json
-            gc_analysis_report.txt  # Upload the generated report
+            gc_analysis_report.txt 
 
       - name: Stop container
         run: |

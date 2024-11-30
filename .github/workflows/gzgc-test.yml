@@ -1,5 +1,3 @@
-name: 51 - Test Web Service Generational ZGC
-
 on: [ push, pull_request ]
 
 jobs:
@@ -78,6 +76,29 @@ jobs:
           -H "Content-Type: text/plain" \
           --data-binary @${{ env.GCNAME }}-gc.log > ${GITHUB_WORKSPACE}/${{ env.GCNAME }}-gc-analysis.json
 
+      - name: Extract values and generate GC analysis report
+        run: |
+          # Use jq to extract required values from the JSON response
+          GC_RESPONSE_FILE="${GITHUB_WORKSPACE}/${{ env.GCNAME }}-gc-analysis.json"
+          
+          # Extract values
+          average_pause_time=$(jq '.gcKPI.averagePauseTime' $GC_RESPONSE_FILE)
+          max_pause_time=$(jq '.gcKPI.maxPauseTime' $GC_RESPONSE_FILE)
+          throughput_percentage=$(jq '.gcKPI.throughputPercentage' $GC_RESPONSE_FILE)
+          minor_gc_count=$(jq '.gcStatistics.minorGCCount' $GC_RESPONSE_FILE)
+          full_gc_count=$(jq '.gcStatistics.fullGCCount' $GC_RESPONSE_FILE)
+          avg_allocation_rate=$(jq '.gcStatistics.avgAllocationRate' $GC_RESPONSE_FILE)
+          
+          # Save extracted values to a text file
+          echo "GC Log Analysis Report" > gc_analysis_report.txt
+          echo "------------------------" >> gc_analysis_report.txt
+          echo "Average Pause Time: $average_pause_time sec" >> gc_analysis_report.txt
+          echo "Max Pause Time: $max_pause_time sec" >> gc_analysis_report.txt
+          echo "Throughput Percentage: $throughput_percentage%" >> gc_analysis_report.txt
+          echo "Minor GC Count: $minor_gc_count" >> gc_analysis_report.txt
+          echo "Full GC Count: $full_gc_count" >> gc_analysis_report.txt
+          echo "Average Allocation Rate: $avg_allocation_rate MB/sec" >> gc_analysis_report.txt
+
       - name: Upload test and analysis results
         uses: actions/upload-artifact@v4
         with:
@@ -90,7 +111,8 @@ jobs:
             ${{ env.GCNAME }}-greet-test-summary.json
             ${{ env.GCNAME }}-gc.log
             ${{ env.GCNAME }}-gc-analysis.json
-
+            gc_analysis_report.txt  
+            
       - name: Stop container
         run: |
           docker ps
