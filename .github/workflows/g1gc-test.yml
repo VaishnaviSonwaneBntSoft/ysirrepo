@@ -78,8 +78,7 @@ jobs:
           -H "Content-Type: text/plain" \
           --data-binary "@${{ env.GCNAME }}-gc.log" \
           -o gceasy-response-${{ env.GCNAME }}.json || (cat gceasy-response-${{ env.GCNAME }}.json && exit 1)
-
-
+      
       - name: Display GC Analysis Results
         run: cat gceasy-response-${{ env.GCNAME }}.json
 
