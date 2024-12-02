@@ -172,7 +172,7 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 | **Average Allocation Rate** | The rate at which memory is allocated.                             | Should be manageable without causing excessive GC overhead     |
 
    - These metrics are crucial for understanding the performance of the garbage collector.
-   - ***Important Note:*** GCEasy offers 5 free API calls per month for log analysis. a monthly subscription is needed to continue using their service.
+   - ***Important Note:*** [GCEasy](https://gceasy.io) offers 5 free API calls per month for log analysis. a monthly subscription is needed to continue using their service.
      
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
     
