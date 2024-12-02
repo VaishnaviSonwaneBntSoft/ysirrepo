@@ -93,7 +93,7 @@ jobs:
           avg_allocation_rate=$(jq '.gcStatistics.avgAllocationRate' $GC_RESPONSE_FILE)
 
           # Save extracted values to a text file
-          echo "GC Log Analysis Report" > gc_analysis_report.txt
+          echo "G1GC Log Analysis Report" > gc_analysis_report.txt
           echo "------------------------" >> gc_analysis_report.txt
           echo "Average Pause Time: $average_pause_time sec" >> gc_analysis_report.txt
           echo "Max Pause Time: $max_pause_time sec" >> gc_analysis_report.txt
