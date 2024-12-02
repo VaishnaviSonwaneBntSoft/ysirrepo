@@ -41,7 +41,7 @@ Before starting, ensure you have the following installed:
     git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
    
     ### Directory Structure
-    ```
+    ```bash
     .
     ├── tests                # Directory containing k6 test scripts
     ├── Dockerfile-g1gc      # Dockerfile for G1GC configuration
@@ -49,7 +49,6 @@ Before starting, ensure you have the following installed:
     ├── build.gradle         # Gradle build file
     ├── settings.gradle      # Gradle settings file
     └── .github/workflows    # Directory containing GitHub Actions workflows
-    ```
     
     #### 1.3 Build the Project Using Gradle
     ``` bash
