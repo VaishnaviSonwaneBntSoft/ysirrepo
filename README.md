@@ -39,8 +39,9 @@ Before starting, ensure you have the following installed:
 1. **Clone the Repository:**
    ```bash
     git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
+   ```
    
-    ### Directory Structure
+    #### 1.2 Directory Structure
     ```bash
     .
     ├── tests                # Directory containing k6 test scripts
@@ -49,10 +50,12 @@ Before starting, ensure you have the following installed:
     ├── build.gradle         # Gradle build file
     ├── settings.gradle      # Gradle settings file
     └── .github/workflows    # Directory containing GitHub Actions workflows
+    ```
     
     #### 1.3 Build the Project Using Gradle
     ``` bash
     ./gradlew clean build
+    ```
 
 2. **Configure Secrets:**
    Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
