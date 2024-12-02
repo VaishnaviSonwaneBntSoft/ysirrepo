@@ -8,21 +8,21 @@ This repository contains GitHub Actions workflows for testing a Java web service
 - **Dockerfile:** `Dockerfile-g1gc`
 - **Garbage Collector:** G1GC
 - **Java Options:**
-  - `-XX:+UseG1GC`
-  - `-XX:MaxGCPauseMillis=200`
-  - `-XX:G1HeapRegionSize=1m`
-  - `-XX:+UseStringDeduplication`
-  - `-Xlog:gc*:file=gc.log:time,uptime,level,tags`
+  - `-XX:+UseG1GC`: Enables the G1 Garbage Collector.
+  - `-XX:MaxGCPauseMillis=200`: Sets the maximum pause time goal for G1GC to 200 milliseconds.
+  - `-XX:G1HeapRegionSize=1m`: Configures the size of G1GC heap regions to 1 MB.
+  - `-XX:+UseStringDeduplication`: Enables string deduplication in G1GC.
+  - `-Xlog:gc*:file=gc.log:time,uptime,level,tags`: Logs GC events to `gc.log` with detailed timestamps, uptime, log level, and tags.
 
 ### Workflow for ZGC
 - **Dockerfile:** `Dockerfile-zgc`
 - **Garbage Collector:** ZGC
 - **Java Options:**
-  - `-XX:+UseZGC`
-  - `-XX:+ZGenerational`
-  - `-XX:MaxGCPauseMillis=200`
-  - `-XX:+UseStringDeduplication`
-  - `-Xlog:gc*:file=gc.log:time,uptime,level,tags`
+  - `-XX:+UseZGC`: Enables the Z Garbage Collector.
+  - `-XX:+ZGenerational`: Enables the generational mode in ZGC.
+  - `-XX:MaxGCPauseMillis=200`: Sets the maximum pause time goal for ZGC to 200 milliseconds.
+  - `-XX:+UseStringDeduplication`: Enables string deduplication in ZGC.
+  - `-Xlog:gc*:file=gc.log:time,uptime,level,tags`: Logs GC events to `gc.log` with detailed timestamps, uptime, log level, and tags.
 
 ## Steps in Both Workflows
 The workflows are triggered on `push` and `pull_request` events. They perform the following steps:
@@ -37,19 +37,26 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 8. **Setup k6:** Installs the k6 load testing tool.
 9. **Run k6 tests:** Executes API tests using k6 and generates test results.
 10. **Extract GC logs:** Copies garbage collection logs from the container.
-11. **Analyze GC logs:** Sends the logs to [GCEasy](https://gceasy.io/) for analysis and extracts performance metrics.
-12. **Upload artifacts:** Saves test results and analysis reports as workflow artifacts.
+11. **Analyze GC logs:** Sends the logs to [GCEasy](https://gceasy.io/) for analysis and extracts performance metrics, including:
+    - **GC Log Analysis Report**
+    - Average Pause Time
+    - Max Pause Time
+    - Throughput Percentage
+    - Minor GC Count
+    - Full GC Count
+    - Average Allocation Rate
+12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
 
 ## Key Features
 - **Garbage Collector Support:** Supports both G1GC and ZGC.
 - **Performance Testing:** Uses k6 to run performance tests.
 - **GC Analysis:** Uploads GC logs to GCEasy for detailed analysis.
-- **Artifact Management:** Saves test results and analysis for further review.
+- **Artifact Management:** Saves test results, GC logs, and analysis for further review.
 
 ## Required Secrets
-- `GHCR_PAT`: Personal Access Token for GitHub Container Registry.
-- `GCEASY_API_KEY`: API key for accessing GCEasy.
+- `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+- `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
 
 ## Directory Structure
 ```
@@ -66,8 +73,8 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 
 1. **Clone the Repository:**
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+  git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
+  cd yogeshwar-trivy-demo-main
    ```
 
 2. **Configure Secrets:**
@@ -77,8 +84,16 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
    Push changes to the repository or create a pull request to trigger the workflow.
 
 4. **View Results:**
-   - Test results and GC analysis will be available as workflow artifacts.
-   - GC logs and performance metrics are saved in GCEasy.
+   - Test results and GC analysis will be available as workflow artifacts in the following formats:
+     - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
+     - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
+   - The artifacts will include:
+     - **GC Logs** (e.g., `gzgc-gc.log`)
+     - **GC Analysis Reports** (e.g., `gzgc-gc-analysis_report.txt`)
+     - **Test Results** (e.g., `gzgc-test-results.json`)
+     - **Performance Metrics**
+   - These zip folders can be downloaded from the workflow run page.
+
 
 ## Troubleshooting
 - **Authentication Errors:** Ensure `GHCR_PAT` and `GCEASY_API_KEY` are correctly configured in repository secrets.
@@ -86,8 +101,3 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 - **Container Issues:** Check the Dockerfiles and ensure the application runs correctly within the container.
 - **k6 Test Failures:** Review the test scripts located in the `tests` directory.
 
-## License
-This project is licensed under the [MIT License](LICENSE).
-
----
-For questions or support, please contact the repository maintainer.
