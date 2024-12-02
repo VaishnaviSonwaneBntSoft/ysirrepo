@@ -49,6 +49,7 @@ Before starting, ensure you have the following installed:
    ##### 1.3 Build the Project Using Gradle
     ./gradlew clean build
 
+
 #### 2. **Configure Secrets:**
    Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
 
@@ -57,31 +58,32 @@ Before starting, ensure you have the following installed:
             
    - `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
 
+
 #### 3. **Run Workflow:**
 
    ##### 3.1 The location of this can be found in
-   - Please refer to section 1.2 in the README for the directory structure.
+   - Please refer to section 1.2 Directory Structure in the README for the workflows.
                
    ##### 3.2 What triggers the workflow       
    - **Push to the** ```main``` **branch**: Whenever code is pushed to the main branch, the workflow will automatically run.
 
    - **Pull Request to the** ```main``` **branch**: If a pull request is created or updated for the main branch, the workflow will also be triggered automatically.
 
+
 #### 4. **View Results:**
 
    ##### 4.1 You can find it in the following location
    - Test results and GC analysis will be available as workflow artifacts in the following formats:
-      
       - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
       - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
            
-         - The artifacts will include:
-           - **GC Logs** (e.g., `gzgc-gc.log`)
-           - **GC Analysis Reports** (e.g., `gzgc-gc-analysis_report.txt`)
-           - **Test Results** (e.g., `gzgc-test-results.json`)
-           - **Performance Metrics**
+   - The artifacts will include:
+     - **GC Logs** (e.g., `gzgc-gc.log`)
+     - **GC Analysis Reports** (e.g., `gzgc-gc-analysis_report.txt`)
+     - **Test Results** (e.g., `gzgc-test-results.json`)
+     - **Performance Metrics**
            
-         - These zip folders can be downloaded from the workflow run page.
+   - These zip folders can be downloaded from the workflow run page.
          
 
 ## Workflow Overview
@@ -156,7 +158,7 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
      - **Minor GC Count**
      - **Full GC Count**
      - **Average Allocation Rate**
-   - These metrics are crucial for understanding the performance of the garbage collector and the application’s memory management.
+   - These metrics are crucial for understanding the performance of the garbage collector.
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
 
