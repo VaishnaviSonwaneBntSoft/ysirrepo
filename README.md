@@ -38,7 +38,7 @@ Before starting, ensure you have the following installed:
        git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
    
    ##### 1.2 Directory Structure
-         .
+      
       ├── tests                    # Directory containing k6 test scripts
       │   ├── greet-test.js         # k6 test script for greeting endpoint
       │   └── health-test.js        # k6 test script for health check endpoint
@@ -49,7 +49,6 @@ Before starting, ensure you have the following installed:
       └── .github/workflows         # Directory containing GitHub Actions workflows
           ├── g1gc-test.yml         # GitHub Actions workflow for G1GC testing
           └── zgc-test.yml          # GitHub Actions workflow for ZGC testing
-
 
    ##### 1.3 Build the Project Using Gradle
     ./gradlew clean build
