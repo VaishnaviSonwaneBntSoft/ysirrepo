@@ -150,15 +150,26 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 8. **Setup k6:** Installs the k6 load testing tool.
 9. **Run k6 tests:** Executes API tests using k6 and generates test results.
 10. **Extract GC logs:** Copies garbage collection logs from the container.
-11. **Analyze GC logs:** 
-   - The garbage collection logs are sent to [GCEasy](https://gceasy.io/) for analysis.
-   - GCEasy returns a JSON file containing detailed performance metrics. From this JSON file, we extract the following key factors:
-     - **Average Pause Time**
-     - **Max Pause Time**
-     - **Throughput Percentage**
-     - **Minor GC Count**
-     - **Full GC Count**
-     - **Average Allocation Rate**
+11. **Analyze GC logs**
+The garbage collection logs are sent to GCEasy for analysis. GCEasy returns a JSON file containing detailed performance metrics. From this JSON file, we extract the following key factors:
+
+- Average Pause Time:
+The average time spent on GC pauses. ***Desired value:*** Less than 100ms.
+
+- Max Pause Time:
+The longest GC pause. ***Desired value:*** Less than 200ms, ideally under 1 second.
+
+- Throughput Percentage:
+The percentage of time spent performing application work vs. GC.***Desired value:*** Greater than 90%.
+
+- Minor GC Count:
+The number of minor GC events. ***Desired value:*** As few as possible.
+
+- Full GC Count:
+The number of full GC events. ***Desired value:*** Keep it to a minimum, ideally zero or very few.
+
+Average Allocation Rate:
+The rate at which memory is allocated. Desired value: Should be manageable without causing excessive GC overhead.
    - These metrics are crucial for understanding the performance of the garbage collector.
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
