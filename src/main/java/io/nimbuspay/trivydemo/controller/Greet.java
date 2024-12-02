@@ -26,7 +26,7 @@ public class Greet {
         testAllocations();
         logger.info("Stopping :: /api/trivydemo/greet");
         return ResponseEntity.ok().body("Hello from Aqua Trivy and GC Demo :: "
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                +   LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     private void testAllocations() {
