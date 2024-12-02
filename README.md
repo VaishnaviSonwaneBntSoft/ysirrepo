@@ -39,13 +39,17 @@ Before starting, ensure you have the following installed:
    
    ##### 1.2 Directory Structure
     .
-    ├── tests                # Directory containing k6 test scripts
-    ├── Dockerfile-g1gc      # Dockerfile for G1GC configuration
-    ├── Dockerfile-zgc       # Dockerfile for ZGC configuration
-    ├── build.gradle         # Gradle build file
-    ├── settings.gradle      # Gradle settings file
-    └── .github/workflows    # Directory containing GitHub Actions workflows
-    
+   ├── tests                    # Directory containing k6 test scripts
+   │   ├── greet-test.js         # k6 test script for greeting endpoint
+   │   └── health-test.js        # k6 test script for health check endpoint
+   ├── Dockerfile-g1gc           # Dockerfile for G1GC configuration
+   ├── Dockerfile-zgc            # Dockerfile for ZGC configuration
+   ├── build.gradle              # Gradle build file
+   ├── settings.gradle           # Gradle settings file
+   └── .github/workflows         # Directory containing GitHub Actions workflows
+       ├── g1gc-test.yml         # GitHub Actions workflow for G1GC testing
+       └── zgc-test.yml          # GitHub Actions workflow for ZGC testing
+
    ##### 1.3 Build the Project Using Gradle
     ./gradlew clean build
 
