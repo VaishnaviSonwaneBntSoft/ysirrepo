@@ -76,7 +76,6 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 1. **Clone the Repository:**
    ```bash
     git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
-    cd yogeshwar-trivy-demo-main
 
 2. **Configure Secrets:**
    Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
