@@ -53,15 +53,14 @@ Before starting, ensure you have the following installed:
    #### 1.3 Build the Project Using Gradle
     ./gradlew clean build
 
-
 ### 2. **Configure Secrets:**
+
    Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
 
    #### 2.1 How to achieve this secrets 
    - `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token]                                      (https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
             
    - `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
-
 
 ### 3. **Run Workflow:**
 
@@ -72,7 +71,6 @@ Before starting, ensure you have the following installed:
    - Push to the ```main``` branch: Whenever code is pushed to the main branch, the workflow will automatically run.
 
    - Pull Request to the ```main``` branch: If a pull request is created or updated for the main branch, the workflow will also be triggered automatically.
-
 
 ### 4. **View Results:**
 
@@ -89,7 +87,6 @@ Before starting, ensure you have the following installed:
            
    - These zip folders can be downloaded from the workflow run page.
          
-
 ## Workflow Overview
 
 ### Workflow for G1GC
