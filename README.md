@@ -32,12 +32,14 @@ Before starting, ensure you have the following installed:
 
 ## How to Use
 
-#### 1. **Clone the Repository:**
-   ```bash
-    git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
-   ```
+#### 1. **Build Process:**
+
+   ##### 1.1 Clone the Repository
+      ```bash
+       git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
+      ```
    
-    ##### 1.2 Directory Structure
+   ##### 1.2 Directory Structure
     ```bash
     .
     ├── tests                # Directory containing k6 test scripts
@@ -48,7 +50,7 @@ Before starting, ensure you have the following installed:
     └── .github/workflows    # Directory containing GitHub Actions workflows
     ```
     
-    ##### 1.3 Build the Project Using Gradle
+   ##### 1.3 Build the Project Using Gradle
     ``` bash
     ./gradlew clean build
     ```
@@ -57,26 +59,27 @@ Before starting, ensure you have the following installed:
    Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
 
    ##### 2.1 How to achieve this secrets 
-            - `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token]                                      (https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+   - `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token]                                      (https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
             
-            - `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
+   - `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
 
 #### 3. **Run Workflow:**
 
    ##### 3.1 The location of this can be found in
-            - Please refer to section 1.2 in the README for the directory structure.
+      - Please refer to section 1.2 in the README for the directory structure.
                
    ##### 3.2 What triggers the workflow       
-            - **Push to the** ```main``` **branch**: Whenever code is pushed to the main branch, the workflow will automatically run.
+       - **Push to the** ```main``` **branch**: Whenever code is pushed to the main branch, the workflow will automatically run.
 
-            - **Pull Request to the** ```main``` **branch**: If a pull request is created or updated for the main branch, the workflow will also be triggered automatically.
+       - **Pull Request to the** ```main``` **branch**: If a pull request is created or updated for the main branch, the workflow will also be triggered automatically.
 
 #### 4. **View Results:**
 
    ##### 4.1 You can find it in the following location
-         - Test results and GC analysis will be available as workflow artifacts in the following formats:
-           - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
-           - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
+      - Test results and GC analysis will be available as workflow artifacts in the following formats:
+      
+      - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
+      - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
            
          - The artifacts will include:
            - **GC Logs** (e.g., `gzgc-gc.log`)
