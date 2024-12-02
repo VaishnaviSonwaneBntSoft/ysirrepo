@@ -2,6 +2,28 @@
 
 This repository contains GitHub Actions workflows for testing a Java web service using G1GC and ZGC garbage collectors. The workflows automate the process of building the application, running performance tests using k6, and analyzing garbage collection logs.
 
+---
+
+## Purpose
+
+The repository is designed to:
+- Automate testing to test a web service using the garbage collectors (G1GC , ZGC).
+- Analyze garbage collection logs using GCeasy API.
+- Generate and publish results for review.
+
+## Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- **OpenJDK (Recommended version: OpenJDK 21 or later)**
+- **Docker**
+- **Gradle**
+- **K6**
+- **Git Installed Locally**
+- **GitHub Account**
+
+---
+
 ## Workflow Overview
 
 ### Workflow for G1GC
