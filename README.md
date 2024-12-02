@@ -37,14 +37,16 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 8. **Setup k6:** Installs the k6 load testing tool.
 9. **Run k6 tests:** Executes API tests using k6 and generates test results.
 10. **Extract GC logs:** Copies garbage collection logs from the container.
-11. **Analyze GC logs:** Sends the logs to [GCEasy](https://gceasy.io/) for analysis and extracts performance metrics, including:
-    - **GC Log Analysis Report**
-    - Average Pause Time
-    - Max Pause Time
-    - Throughput Percentage
-    - Minor GC Count
-    - Full GC Count
-    - Average Allocation Rate
+11. **Analyze GC logs:** 
+   - The garbage collection logs are sent to [GCEasy](https://gceasy.io/) for analysis.
+   - GCEasy returns a JSON file containing detailed performance metrics. From this JSON file, we extract the following key factors:
+     - **Average Pause Time**
+     - **Max Pause Time**
+     - **Throughput Percentage**
+     - **Minor GC Count**
+     - **Full GC Count**
+     - **Average Allocation Rate**
+   - These metrics are crucial for understanding the performance of the garbage collector and the application’s memory management.
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
 
