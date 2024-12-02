@@ -7,7 +7,7 @@ This repository contains GitHub Actions workflows for testing a Java web service
 ## Purpose
 
 The repository is designed to:
-- Automate testing to test a web service using the garbage collectors (G1GC , ZGC).
+- Automate testing of web service using the garbage collectors (G1GC , ZGC).
 - Analyze garbage collection logs using GCeasy API.
 - Generate and publish results for review.
 
@@ -23,6 +23,54 @@ Before starting, ensure you have the following installed:
 - **GitHub Account**
 
 ---
+
+## Key Features
+- **Garbage Collector Support:** Supports both G1GC and ZGC.
+- **Performance Testing:** Uses k6 to run performance tests.
+- **GC Analysis:** Uploads GC logs to GCEasy for detailed analysis.
+- **Artifact Management:** Saves test results, GC logs, and analysis for further review.
+
+## Required Secrets
+- `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+- `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
+
+## How to Use
+
+1. **Clone the Repository:**
+   ```bash
+    git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
+   
+    ### Directory Structure
+    ```
+    .
+    ├── tests                # Directory containing k6 test scripts
+    ├── Dockerfile-g1gc      # Dockerfile for G1GC configuration
+    ├── Dockerfile-zgc       # Dockerfile for ZGC configuration
+    ├── build.gradle         # Gradle build file
+    ├── settings.gradle      # Gradle settings file
+    └── .github/workflows    # Directory containing GitHub Actions workflows
+    ```
+    
+    #### 1.3 Build the Project Using Gradle
+    ``` bash
+    ./gradlew clean build
+
+2. **Configure Secrets:**
+   Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
+
+3. **Run Workflow:**
+   Push changes to the repository or create a pull request to trigger the workflow.
+
+4. **View Results:**
+   - Test results and GC analysis will be available as workflow artifacts in the following formats:
+     - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
+     - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
+   - The artifacts will include:
+     - **GC Logs** (e.g., `gzgc-gc.log`)
+     - **GC Analysis Reports** (e.g., `gzgc-gc-analysis_report.txt`)
+     - **Test Results** (e.g., `gzgc-test-results.json`)
+     - **Performance Metrics**
+   - These zip folders can be downloaded from the workflow run page.
 
 ## Workflow Overview
 
@@ -72,49 +120,7 @@ The workflows are triggered on `push` and `pull_request` events. They perform th
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
 
-## Key Features
-- **Garbage Collector Support:** Supports both G1GC and ZGC.
-- **Performance Testing:** Uses k6 to run performance tests.
-- **GC Analysis:** Uploads GC logs to GCEasy for detailed analysis.
-- **Artifact Management:** Saves test results, GC logs, and analysis for further review.
 
-## Required Secrets
-- `GHCR_PAT`: Personal Access Token for GitHub Container Registry. You can generate it from [GitHub's documentation on creating a Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
-- `GCEASY_API_KEY`: API key for accessing GCEasy. You can obtain the key by signing up on [GCEasy.io](https://gceasy.io) and requesting the API key.
-
-## Directory Structure
-```
-.
-├── tests                # Directory containing k6 test scripts
-├── Dockerfile-g1gc      # Dockerfile for G1GC configuration
-├── Dockerfile-zgc       # Dockerfile for ZGC configuration
-├── build.gradle         # Gradle build file
-├── settings.gradle      # Gradle settings file
-└── .github/workflows    # Directory containing GitHub Actions workflows
-```
-
-## How to Use
-
-1. **Clone the Repository:**
-   ```bash
-    git clone https://github.com/yogeshwar-vhatkar-bnt/yogeshwar-trivy-demo-main
-
-2. **Configure Secrets:**
-   Add the required secrets (`GHCR_PAT` and `GCEASY_API_KEY`) to the repository settings.
-
-3. **Run Workflow:**
-   Push changes to the repository or create a pull request to trigger the workflow.
-
-4. **View Results:**
-   - Test results and GC analysis will be available as workflow artifacts in the following formats:
-     - For **G1GC**, the results will be saved in a zip folder named `g1gc-results`.
-     - For **ZGC**, the results will be saved in a zip folder named `gzgc-results`.
-   - The artifacts will include:
-     - **GC Logs** (e.g., `gzgc-gc.log`)
-     - **GC Analysis Reports** (e.g., `gzgc-gc-analysis_report.txt`)
-     - **Test Results** (e.g., `gzgc-test-results.json`)
-     - **Performance Metrics**
-   - These zip folders can be downloaded from the workflow run page.
 
 
 ## Troubleshooting
