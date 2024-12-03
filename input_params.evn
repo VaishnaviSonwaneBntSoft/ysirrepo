@@ -1,5 +1,0 @@
-GC_PARAMS=-Xms2G -Xmx2G -XX:MaxMetaspaceSize=1G -XX:+UseZGC -XX:+ZGenerational -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -verbose:gc -Xlog:gc*:file=gc.log:time,uptime,level,tags
-K6_HEALTH_TEST=./tests/health-test.js
-K6_GREET_TEST=./tests/greet-test.js
-DOCKER_PORT=8080
-CONTAINER_NAME=trivy-demo

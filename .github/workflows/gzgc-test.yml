@@ -1,6 +1,4 @@
-name: Test with GC Parameters
-
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   test:
@@ -11,18 +9,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Load Environment Variables
-        run: |
-          if [ -f .env ]; then
-            echo "Loading environment variables from .env"
-            set -o allexport
-            source .env
-            set +o allexport
-          else
-            echo ".env file not found! Ensure it exists in the repository."
-            exit 1
-          fi
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -40,12 +26,14 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: |
+          pwd
           chmod 755 ./gradlew
           ./gradlew build
 
       - name: Log in to GitHub Container Registry
         run: |
           echo "Log in to GitHub Container Registry"
+          pwd
           echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Set lowercase repository owner
@@ -53,14 +41,14 @@ jobs:
 
       - name: Build and run container
         run: |
-          docker build --build-arg GC_PARAMS="$GC_PARAMS" --file Dockerfile -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest .
+          docker build --file Dockerfile-${{ env.GCNAME }} -t ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest .
           docker push ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest
           docker run --name trivy-demo-${{ env.GCNAME }} -d -p 8181:8080 ghcr.io/${{ env.REPO_OWNER }}/trivy-demo-${{ env.GCNAME }}:latest
 
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
         with:
-          k6-version: '0.51.0'
+          k6-version: '0.51.0'  # Specify the k6 version you want to use
 
       - name: Run k6 tests
         uses: grafana/run-k6-action@v1
@@ -68,16 +56,19 @@ jobs:
           path: |
             ./tests/health-test.js
             ./tests/greet-test.js
-          flags: --out csv=${{ env.GCNAME }}-test-results.csv
+          flags: --out csv=${{ env.GCNAME }}-test-results.csv  # Save the results to a CSV file
 
       - name: Extract GC logs
         run: docker cp trivy-demo-${{ env.GCNAME }}:/app/gc.log ./gc.log
 
       - name: Check and rename generated files
         run: |
+          pwd
+          ls -ltra
           mv health-test-summary.json ${{ env.GCNAME }}-health-test-summary.json
           mv greet-test-summary.json ${{ env.GCNAME }}-greet-test-summary.json
           mv gc.log ${{ env.GCNAME }}-gc.log
+          ls -ltra
 
       - name: Send GC log to GCEasy
         run: |
@@ -87,8 +78,10 @@ jobs:
 
       - name: Extract values and generate GC analysis report
         run: |
+          # Use jq to extract required values from the JSON response
           GC_RESPONSE_FILE="${GITHUB_WORKSPACE}/${{ env.GCNAME }}-gc-analysis.json"
           
+          # Extract values
           average_pause_time=$(jq '.gcKPI.averagePauseTime' $GC_RESPONSE_FILE)
           max_pause_time=$(jq '.gcKPI.maxPauseTime' $GC_RESPONSE_FILE)
           throughput_percentage=$(jq '.gcKPI.throughputPercentage' $GC_RESPONSE_FILE)
@@ -96,7 +89,8 @@ jobs:
           full_gc_count=$(jq '.gcStatistics.fullGCCount' $GC_RESPONSE_FILE)
           avg_allocation_rate=$(jq '.gcStatistics.avgAllocationRate' $GC_RESPONSE_FILE)
           
-          echo "GC Log Analysis Report" > gc_analysis_report.txt
+          # Save extracted values to a text file
+          echo "ZGC Log Analysis Report" > gc_analysis_report.txt
           echo "------------------------" >> gc_analysis_report.txt
           echo "Average Pause Time: $average_pause_time sec" >> gc_analysis_report.txt
           echo "Max Pause Time: $max_pause_time sec" >> gc_analysis_report.txt
@@ -121,5 +115,7 @@ jobs:
 
       - name: Stop container
         run: |
+          docker ps
           docker stop trivy-demo-${{ env.GCNAME }}
           docker container prune -f
+          docker ps
