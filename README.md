@@ -141,26 +141,41 @@ Before starting, ensure you have the following installed:
 The workflows are triggered on `push` and `pull_request` events. They perform the following steps:
 
 1. **Checkout the code:** Retrieves the repository content.
+ 
 2. **Set up JDK:** Configures Java Development Kit (JDK 21) for building and running the application.
+
 3. **Gather machine information:** Captures CPU and memory details for analysis.
+ 
 4. **Set up Gradle:** Configures Gradle for building the Java application.
+ 
 5. **Build the application:** Compiles the code using the Gradle wrapper.
+ 
 6. **Log in to GitHub Container Registry:** Authenticates with GitHub's container registry.
+ 
 7. **Build and run the container:** Builds a Docker image and runs it using the respective Dockerfile (`Dockerfile-g1gc` or `Dockerfile-zgc`).
+ 
 8. **Setup k6:** Installs the k6 load testing tool.
+
 9. **Run k6 tests:** Executes API tests using k6 and generates test results.
+
 10. **Extract GC logs:** Copies garbage collection logs from the container.
-11. **Analyze GC logs:** 
-   - The garbage collection logs are sent to [GCEasy](https://gceasy.io/) for analysis.
-   - GCEasy returns a JSON file containing detailed performance metrics. From this JSON file, we extract the following key factors:
-     - **Average Pause Time**
-     - **Max Pause Time**
-     - **Throughput Percentage**
-     - **Minor GC Count**
-     - **Full GC Count**
-     - **Average Allocation Rate**
+
+11. **Analyze GC logs:** The garbage collection logs are sent to GCEasy for analysis. GCEasy returns a JSON file containing detailed performance metrics. From this JSON file, we extract the following key factors:
+
+| **Factor**              | **Description**                                                     | **Desired Value**                                             |
+|-------------------------|---------------------------------------------------------------------|---------------------------------------------------------------|
+| **Average Pause Time**   | The average time spent on GC pauses.                                | Less than 100ms                                                |
+| **Max Pause Time**       | The longest GC pause.                                              | Less than 200ms, ideally under 1 second                        |
+| **Throughput Percentage**| The percentage of time spent performing application work vs. GC.   | Greater than 90%                                               |
+| **Minor GC Count**       | The number of minor GC events.                                      | As few as possible                                             |
+| **Full GC Count**        | The number of full GC events.                                       | Keep it to a minimum, ideally zero or very few                |
+| **Average Allocation Rate** | The rate at which memory is allocated.                             | Should be manageable without causing excessive GC overhead     |
+
    - These metrics are crucial for understanding the performance of the garbage collector.
+   - ***Important Note:*** [GCEasy](https://gceasy.io) offers 5 free API calls per month for log analysis. a monthly subscription is needed to continue using their service.
+     
 12. **Upload artifacts:** Saves test results, GC logs, and analysis reports as workflow artifacts.
+    
 13. **Stop and clean up containers:** Stops the running container and removes unused Docker resources.
 
 
